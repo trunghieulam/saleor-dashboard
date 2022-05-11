@@ -66,6 +66,7 @@ const props: ProductUpdatePageProps = {
   onSubmit: () => undefined,
   onVariantReorder: () => undefined,
   onVariantsAdd: () => undefined,
+  onVariantShow: () => undefined,
   onVariantEndPreorderDialogOpen: () => undefined,
   onWarehouseConfigure: () => undefined,
   openChannelsModal: () => undefined,

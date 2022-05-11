@@ -61,7 +61,8 @@ import {
   ProductUrlDialog,
   ProductUrlQueryParams,
   productVariantAddUrl,
-  productVariantCreatorUrl
+  productVariantCreatorUrl,
+  productVariantEditUrl
 } from "../../urls";
 import {
   CHANNELS_AVAILIABILITY_MODAL_SELECTOR,
