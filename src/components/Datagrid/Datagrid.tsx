@@ -118,6 +118,7 @@ export const Datagrid = <T,>({
         <tbody>
           <tr className={classes.actionRow}>
             <th>
+              {/* @ts-ignore */}
               <ColumnPicker
                 IconButtonProps={{
                   variant: "secondary"
