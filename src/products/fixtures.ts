@@ -8,7 +8,6 @@ import {
   WeightUnitsEnum
 } from "@saleor/graphql";
 import { RelayToFlat } from "@saleor/types";
-import { warehouseList } from "@saleor/warehouses/fixtures";
 
 import * as richTextEditorFixtures from "../components/RichTextEditor/fixtures.json";
 
