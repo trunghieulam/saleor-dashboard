@@ -1,7 +1,7 @@
 import { makeStyles } from "@saleor/macaw-ui";
 
 const cellHeight = 48;
-const headerCellHeight = 28;
+const headerCellHeight = 42;
 const actionBarWidth = 80;
 
 const useStyles = makeStyles(

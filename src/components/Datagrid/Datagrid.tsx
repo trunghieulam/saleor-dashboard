@@ -3,6 +3,7 @@ import React from "react";
 import Spreadsheet, { CellBase, Matrix } from "react-spreadsheet";
 
 import CardMenu, { CardMenuItem } from "../CardMenu";
+import ColumnPicker from "../ColumnPicker";
 import useStyles from "./styles";
 
 export interface DatagridCell extends CellBase<string> {
@@ -116,7 +117,23 @@ export const Datagrid = <T,>({
       <table className={classes.actions}>
         <tbody>
           <tr className={classes.actionRow}>
-            <th />
+            <th>
+              <ColumnPicker
+                IconButtonProps={{
+                  variant: "secondary"
+                }}
+                availableColumns={availableColumns}
+                initialColumns={availableColumns}
+                defaultColumns={["name", "sku", "margin"]}
+                onSave={columnNames =>
+                  setColumns(
+                    columnNames.map(column =>
+                      availableColumns.find(c => c.value === column)
+                    )
+                  )
+                }
+              />
+            </th>
           </tr>
           {data.map(row => (
             <tr className={classes.actionRow}>
