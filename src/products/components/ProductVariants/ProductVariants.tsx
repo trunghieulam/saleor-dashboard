@@ -18,34 +18,48 @@ interface ProductVariantsProps extends ListActions, ChannelProps {
   product: ProductFragment;
   variants: ProductDetailsVariantFragment[];
   onVariantReorder: ReorderAction;
-  onSetDefaultVariant(variant: ProductDetailsVariantFragment[][0]);
-  onVariantsAdd?();
+  onRowClick: (id: string) => void;
+  onSetDefaultVariant(variant: ProductDetailsVariantFragment);
+  onVariantsAdd();
 }
 
 export const ProductVariants: React.FC<ProductVariantsProps> = ({
-  variants
+  variants,
+  onRowClick
 }) => {
   const intl = useIntl();
   // const limitReached = isLimitReached(limits, "productVariants");
   const columns = React.useMemo(
     () =>
-      [
-        "name",
-        "sku",
-        "margin",
-        ...variants[0]?.stocks.map(stock => `stock:${stock.warehouse.id}`),
-        ...variants[0]?.channelListings.map(
-          channel => `channel:${channel.channel.id}`
-        ),
-        ...variants[0]?.attributes.map(
-          attribute => `attribute:${attribute.attribute.id}`
-        )
-      ].map(c => ({ label: getColumnName(c, variants, intl), value: c })),
+      variants?.length > 0
+        ? [
+            "name",
+            "sku",
+            "margin",
+            ...variants[0]?.stocks.map(stock => `stock:${stock.warehouse.id}`),
+            ...variants[0]?.channelListings.map(
+              channel => `channel:${channel.channel.id}`
+            ),
+            ...variants[0]?.attributes.map(
+              attribute => `attribute:${attribute.attribute.id}`
+            )
+          ].map(c => ({ label: getColumnName(c, variants, intl), value: c }))
+        : [],
     [variants]
   );
 
   return (
-    <Datagrid availableColumns={columns} data={variants} getData={getData} />
+    <Datagrid
+      availableColumns={columns}
+      data={variants}
+      getData={getData}
+      menuItems={row => [
+        {
+          label: "Edit Variant",
+          onSelect: () => onRowClick(row[0].id)
+        }
+      ]}
+    />
   );
 };
 ProductVariants.displayName = "ProductVariants";

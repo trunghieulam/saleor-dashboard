@@ -115,6 +115,7 @@ export interface ProductUpdatePageProps extends ListActions, ChannelProps {
   onAssignReferencesClick: (attribute: AttributeInput) => void;
   onCloseDialog: () => void;
   onVariantsAdd: () => void;
+  onVariantShow: (id: string) => void;
   onVariantReorder: ReorderAction;
   onVariantEndPreorderDialogOpen: () => void;
   onImageDelete: (id: string) => () => void;
@@ -178,6 +179,7 @@ export const ProductUpdatePage: React.FC<ProductUpdatePageProps> = ({
   onSubmit,
   channelsData,
   onVariantsAdd,
+  onVariantShow,
   onSetDefaultVariant,
   onVariantReorder,
   onVariantEndPreorderDialogOpen,
@@ -361,6 +363,7 @@ export const ProductUpdatePage: React.FC<ProductUpdatePageProps> = ({
                     variants={variants}
                     product={product}
                     onVariantsAdd={onVariantsAdd}
+                    onRowClick={onVariantShow}
                     onVariantReorder={onVariantReorder}
                     onSetDefaultVariant={onSetDefaultVariant}
                     toolbar={toolbar}

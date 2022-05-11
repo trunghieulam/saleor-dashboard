@@ -1,6 +1,6 @@
+import { DatagridCell } from "@saleor/components/Datagrid/Datagrid";
 import { ProductDetailsVariantFragment } from "@saleor/graphql";
 import { IntlShape } from "react-intl";
-import { CellBase } from "react-spreadsheet";
 
 import messages from "./messages";
 
@@ -15,17 +15,22 @@ export function isEditable(column: string): boolean {
 export function getData(
   variant: ProductDetailsVariantFragment,
   column: string
-): CellBase<string> & { column: string } {
+): DatagridCell {
   switch (column) {
     case "name":
     case "sku":
     case "margin":
-      return { value: variant[column]?.toString() ?? "", column };
+      return {
+        id: variant.id,
+        value: variant[column]?.toString() ?? "",
+        column
+      };
   }
 
   if (isStockColumn.test(column)) {
     return {
       column,
+      id: variant.id,
       value: variant.stocks
         .find(stock => stock.warehouse.id === column.match(isStockColumn)[1])
         ?.quantity.toString()
@@ -35,6 +40,7 @@ export function getData(
   if (isChannelColumn.test(column)) {
     return {
       column,
+      id: variant.id,
       value: variant.channelListings
         .find(
           listing => listing.channel.id === column.match(isChannelColumn)[1]
@@ -46,6 +52,7 @@ export function getData(
   if (isAttributeColumn.test(column)) {
     return {
       column,
+      id: variant.id,
       readOnly: true,
       value: variant.attributes
         .find(

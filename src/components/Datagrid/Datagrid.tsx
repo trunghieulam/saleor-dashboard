@@ -1,16 +1,20 @@
+import { MoreHorizontalIcon } from "@saleor/macaw-ui";
 import React from "react";
 import Spreadsheet, { CellBase, Matrix } from "react-spreadsheet";
 
+import CardMenu, { CardMenuItem } from "../CardMenu";
 import useStyles from "./styles";
 
 export interface DatagridCell extends CellBase<string> {
   column: string;
+  id: string;
 }
 
 export interface DatagridProps<T> {
   availableColumns: Array<Record<"label" | "value", string>>;
   data: T[];
   getData: (row: T, column: string) => DatagridCell;
+  menuItems: (row: DatagridCell[]) => CardMenuItem[];
 }
 
 const Column: React.FC<React.DetailedHTMLProps<
@@ -46,7 +50,8 @@ const Column: React.FC<React.DetailedHTMLProps<
 export const Datagrid = <T,>({
   availableColumns,
   data: initial,
-  getData
+  getData,
+  menuItems
 }: DatagridProps<T>): React.ReactElement => {
   const classes = useStyles();
 
@@ -66,44 +71,66 @@ export const Datagrid = <T,>({
   }, [columns]);
 
   return (
-    <Spreadsheet
-      data={data}
-      columnLabels={columns.map(c => c.label)}
-      className={classes.tableWrapper}
-      Table={({ children }) => (
-        <table className={classes.table}>
-          <colgroup>
-            <col style={{ width: 80 }} />
-            {columns.map(({ value }) => (
-              <col key={value} style={{ width: 200 }} />
-            ))}
-          </colgroup>
-          <tbody>{children}</tbody>
-        </table>
-      )}
-      ColumnIndicator={({ column, label, onSelect }) => (
-        <Column
-          onClick={() => onSelect(column, true)}
-          draggable
-          data-column={column}
-          onDrop={e => {
-            const targetIndex = parseInt(
-              e.dataTransfer.getData("text/plain"),
-              10
-            );
-            setColumns(columns => {
-              const c = [...columns];
-              const r = c.splice(targetIndex, 1)[0];
-              c.splice(column, 0, r);
-              return c;
-            });
-          }}
-        >
-          {label}
-        </Column>
-      )}
-      onChange={setData}
-    />
+    <div className={classes.wrapper}>
+      <Spreadsheet
+        data={data}
+        columnLabels={columns.map(c => c.label)}
+        className={classes.spreadsheet}
+        Table={({ children }) => (
+          <table className={classes.table}>
+            <colgroup>
+              <col style={{ width: 80 }} />
+              {columns.map(({ value }) => (
+                <col key={value} style={{ width: 200 }} />
+              ))}
+              <col className={classes.actionCol} />
+            </colgroup>
+            <tbody>{children}</tbody>
+          </table>
+        )}
+        ColumnIndicator={({ column, label, onSelect }) => (
+          <Column
+            onClick={() => onSelect(column, true)}
+            draggable
+            data-column={column}
+            onDrop={e => {
+              const targetIndex = parseInt(
+                e.dataTransfer.getData("text/plain"),
+                10
+              );
+              setColumns(columns => {
+                const c = [...columns];
+                const r = c.splice(targetIndex, 1)[0];
+                c.splice(column, 0, r);
+                return c;
+              });
+            }}
+          >
+            {label}
+          </Column>
+        )}
+        onChange={data => {
+          setData(data);
+        }}
+      />
+      <table className={classes.actions}>
+        <tbody>
+          <tr className={classes.actionRow}>
+            <th />
+          </tr>
+          {data.map(row => (
+            <tr className={classes.actionRow}>
+              <td>
+                <CardMenu
+                  Icon={MoreHorizontalIcon}
+                  menuItems={menuItems(row)}
+                />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 };
 Datagrid.displayName = "Datagrid";
