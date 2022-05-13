@@ -57,6 +57,7 @@ export const Datagrid = <T,>({
   const classes = useStyles();
 
   const [columns, setColumns] = React.useState(availableColumns);
+  const [query, setQuery] = React.useState("");
 
   // May contain formulas
   const [data, setData] = React.useState<Matrix<DatagridCell>>([]);
@@ -118,14 +119,13 @@ export const Datagrid = <T,>({
         <tbody>
           <tr className={classes.actionRow}>
             <th>
-              {/* @ts-ignore */}
               <ColumnPicker
                 IconButtonProps={{
                   variant: "secondary"
                 }}
                 availableColumns={availableColumns}
-                initialColumns={availableColumns}
-                defaultColumns={["name", "sku", "margin"]}
+                initialColumns={columns}
+                defaultColumns={availableColumns.map(({ value }) => value)}
                 onSave={columnNames =>
                   setColumns(
                     columnNames.map(column =>
@@ -133,6 +133,11 @@ export const Datagrid = <T,>({
                     )
                   )
                 }
+                hasMore={false}
+                loading={false}
+                onFetchMore={() => undefined}
+                onQueryChange={setQuery}
+                query={query}
               />
             </th>
           </tr>
