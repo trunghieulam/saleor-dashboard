@@ -1,10 +1,11 @@
 import { MoreHorizontalIcon } from "@saleor/macaw-ui";
 import React from "react";
+import Draggable, { DraggableEventHandler } from "react-draggable";
 import Spreadsheet, { CellBase, Matrix } from "react-spreadsheet";
 
 import CardMenu, { CardMenuItem } from "../CardMenu";
 import ColumnPicker from "../ColumnPicker";
-import useStyles from "./styles";
+import useStyles, { rowIndicatorWidth } from "./styles";
 
 export interface DatagridCell extends CellBase<string> {
   column: string;
@@ -51,6 +52,42 @@ const Column: React.FC<React.DetailedHTMLProps<
   );
 };
 
+const ColumnMove: React.FC<{
+  offset: number;
+  onDrop: DraggableEventHandler;
+}> = ({ offset, onDrop }) => {
+  const [drag, setDrag] = React.useState(false);
+
+  return (
+    <Draggable
+      axis="x"
+      onMouseDown={e => {
+        e.preventDefault();
+        e.stopPropagation();
+      }}
+      onDrag={() => {
+        setDrag(true);
+      }}
+      onStop={(event, data) => {
+        setDrag(false);
+        onDrop(event, data);
+      }}
+    >
+      <div
+        style={{
+          background: drag ? "red" : "transparent",
+          cursor: "e-resize",
+          width: 3,
+          height: "100%",
+          position: "absolute",
+          top: 0,
+          left: offset
+        }}
+      />
+    </Draggable>
+  );
+};
+
 export const Datagrid = <T,>({
   availableColumns,
   data: initial,
@@ -59,7 +96,12 @@ export const Datagrid = <T,>({
 }: DatagridProps<T>): React.ReactElement => {
   const classes = useStyles();
 
-  const [columns, setColumns] = React.useState(availableColumns);
+  const [columns, setColumns] = React.useState(
+    availableColumns.map(c => ({
+      ...c,
+      width: 200
+    }))
+  );
   const [query, setQuery] = React.useState("");
 
   // May contain formulas
@@ -77,47 +119,68 @@ export const Datagrid = <T,>({
 
   return (
     <div className={classes.wrapper}>
-      <Spreadsheet
-        data={data}
-        columnLabels={columns.map(c => c.label)}
-        className={classes.spreadsheet}
-        Table={({ children }) => (
-          <table className={classes.table}>
-            <colgroup>
-              <col style={{ width: 80 }} />
-              {columns.map(({ value }) => (
-                <col key={value} style={{ width: 200 }} />
-              ))}
-              <col className={classes.actionCol} />
-            </colgroup>
-            <tbody>{children}</tbody>
-          </table>
-        )}
-        ColumnIndicator={({ column, label, onSelect }) => (
-          <Column
-            onClick={() => onSelect(column, true)}
-            draggable
-            data-column={column}
-            onDrop={e => {
-              const targetIndex = parseInt(
-                e.dataTransfer.getData("text/plain"),
-                10
+      <div className={classes.scrollable}>
+        <Spreadsheet
+          data={data}
+          columnLabels={columns.map(c => c.label)}
+          className={classes.spreadsheet}
+          Table={({ children }) => (
+            <table className={classes.table}>
+              <colgroup>
+                <col className={classes.rowIndicator} />
+                {columns.map(({ value, width }) => (
+                  <col key={value} style={{ width }} />
+                ))}
+                <col className={classes.actionCol} />
+              </colgroup>
+              <tbody>{children}</tbody>
+            </table>
+          )}
+          ColumnIndicator={({ column, label, onSelect }) => (
+            <Column
+              onClick={() => onSelect(column, true)}
+              draggable
+              data-column={column}
+              onDrop={e => {
+                const targetIndex = parseInt(
+                  e.dataTransfer.getData("text/plain"),
+                  10
+                );
+                setColumns(columns => {
+                  const c = [...columns];
+                  const r = c.splice(targetIndex, 1)[0];
+                  c.splice(column, 0, r);
+                  return c;
+                });
+              }}
+            >
+              {label}
+            </Column>
+          )}
+          onChange={data => {
+            setData(data);
+          }}
+        />
+        {columns.slice(0, -1).map((column, index) => (
+          <ColumnMove
+            key={`${column.value}-${column.width}`}
+            offset={
+              rowIndicatorWidth +
+              columns.slice(0, index + 1).reduce((acc, v) => acc + v.width, 0) -
+              1
+            }
+            onDrop={(_, data) => {
+              setColumns(prevColumns =>
+                prevColumns.map(pc =>
+                  pc.value === column.value
+                    ? { ...pc, width: pc.width + data.x }
+                    : pc
+                )
               );
-              setColumns(columns => {
-                const c = [...columns];
-                const r = c.splice(targetIndex, 1)[0];
-                c.splice(column, 0, r);
-                return c;
-              });
             }}
-          >
-            {label}
-          </Column>
-        )}
-        onChange={data => {
-          setData(data);
-        }}
-      />
+          />
+        ))}
+      </div>
       <table className={classes.actions}>
         <tbody>
           <tr className={classes.actionRow}>
@@ -130,10 +193,13 @@ export const Datagrid = <T,>({
                 initialColumns={columns}
                 defaultColumns={availableColumns.map(({ value }) => value)}
                 onSave={columnNames =>
-                  setColumns(
-                    columnNames.map(column =>
-                      availableColumns.find(c => c.value === column)
-                    )
+                  setColumns(prevColumns =>
+                    columnNames.map(column => ({
+                      ...availableColumns.find(c => c.value === column),
+                      width:
+                        prevColumns.find(pc => pc.value === column)?.width ??
+                        200
+                    }))
                   )
                 }
                 hasMore={false}

@@ -3,6 +3,7 @@ import { makeStyles } from "@saleor/macaw-ui";
 const cellHeight = 48;
 const headerCellHeight = 42;
 const actionBarWidth = 80;
+export const rowIndicatorWidth = 80;
 
 const useStyles = makeStyles(
   theme => ({
@@ -27,6 +28,13 @@ const useStyles = makeStyles(
     },
     actionCol: {
       width: actionBarWidth
+    },
+    rowIndicator: {
+      width: rowIndicatorWidth
+    },
+    scrollable: {
+      overflowX: "scroll",
+      position: "relative"
     },
     wrapper: {
       position: "relative"
@@ -63,7 +71,6 @@ const useStyles = makeStyles(
       "--elevation": "none",
       display: "block",
       fontWeight: 500,
-      overflowX: "scroll",
       width: "100%"
     }
   }),
