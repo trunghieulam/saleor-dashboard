@@ -42,6 +42,9 @@ const Column: React.FC<React.DetailedHTMLProps<
         }
         setDragOver(false);
       }}
+      onDragOver={e => {
+        e.preventDefault();
+      }}
       style={dragOver ? { borderRight: `1px solid red` } : {}}
       {...rest}
     />
