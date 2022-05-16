@@ -30,6 +30,13 @@ const useStyles = makeStyles(
     actionCol: {
       width: actionBarWidth
     },
+    columnResize: {
+      cursor: "e-resize",
+      width: columnResizerWidth,
+      height: "100%",
+      position: "absolute",
+      top: 0
+    },
     rowIndicator: {
       width: rowIndicatorWidth
     },

@@ -1,12 +1,13 @@
 import React from "react";
 import Draggable, { DraggableEventHandler } from "react-draggable";
 
-import { columnResizerWidth } from "./styles";
+import useStyles from "./styles";
 
 const ColumnResize: React.FC<{
   offset: number;
   onDrop: DraggableEventHandler;
 }> = ({ offset, onDrop }) => {
+  const classes = useStyles();
   const [drag, setDrag] = React.useState(false);
 
   return (
@@ -25,13 +26,10 @@ const ColumnResize: React.FC<{
       }}
     >
       <div
+        className={classes.columnResize}
         style={{
           background: drag ? "red" : "transparent",
-          cursor: "e-resize",
-          width: columnResizerWidth,
-          height: "100%",
-          position: "absolute",
-          top: 0,
+
           left: offset
         }}
       />
