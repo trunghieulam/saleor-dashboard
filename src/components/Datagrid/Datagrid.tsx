@@ -1,11 +1,12 @@
 import { MoreHorizontalIcon } from "@saleor/macaw-ui";
 import React from "react";
-import Draggable, { DraggableEventHandler } from "react-draggable";
 import Spreadsheet, { CellBase, Matrix } from "react-spreadsheet";
 
 import CardMenu, { CardMenuItem } from "../CardMenu";
 import ColumnPicker from "../ColumnPicker";
-import useStyles, { rowIndicatorWidth } from "./styles";
+import Column from "./Column";
+import ColumnResize from "./ColumnResize";
+import useStyles, { columnResizerWidth, rowIndicatorWidth } from "./styles";
 
 export interface DatagridCell extends CellBase<string> {
   column: string;
@@ -18,75 +19,6 @@ export interface DatagridProps<T> {
   getData: (row: T, column: string) => DatagridCell;
   menuItems: (row: DatagridCell[]) => CardMenuItem[];
 }
-
-const Column: React.FC<React.DetailedHTMLProps<
-  React.ThHTMLAttributes<HTMLTableHeaderCellElement>,
-  HTMLTableHeaderCellElement
->> = ({ onDrop, ...rest }) => {
-  const [dragOver, setDragOver] = React.useState(false);
-
-  return (
-    <th
-      onDragStart={e => {
-        e.dataTransfer.setData("text/plain", rest["data-column"]);
-      }}
-      onDragEnter={() => {
-        setDragOver(true);
-      }}
-      onDragLeave={() => {
-        setDragOver(false);
-      }}
-      onDrop={e => {
-        e.preventDefault();
-        if (onDrop) {
-          onDrop(e);
-        }
-        setDragOver(false);
-      }}
-      onDragOver={e => {
-        e.preventDefault();
-      }}
-      style={dragOver ? { borderRight: `1px solid red` } : {}}
-      {...rest}
-    />
-  );
-};
-
-const ColumnMove: React.FC<{
-  offset: number;
-  onDrop: DraggableEventHandler;
-}> = ({ offset, onDrop }) => {
-  const [drag, setDrag] = React.useState(false);
-
-  return (
-    <Draggable
-      axis="x"
-      onMouseDown={e => {
-        e.preventDefault();
-        e.stopPropagation();
-      }}
-      onDrag={() => {
-        setDrag(true);
-      }}
-      onStop={(event, data) => {
-        setDrag(false);
-        onDrop(event, data);
-      }}
-    >
-      <div
-        style={{
-          background: drag ? "red" : "transparent",
-          cursor: "e-resize",
-          width: 3,
-          height: "100%",
-          position: "absolute",
-          top: 0,
-          left: offset
-        }}
-      />
-    </Draggable>
-  );
-};
 
 export const Datagrid = <T,>({
   availableColumns,
@@ -162,12 +94,12 @@ export const Datagrid = <T,>({
           }}
         />
         {columns.slice(0, -1).map((column, index) => (
-          <ColumnMove
+          <ColumnResize
             key={`${column.value}-${column.width}`}
             offset={
               rowIndicatorWidth +
               columns.slice(0, index + 1).reduce((acc, v) => acc + v.width, 0) -
-              1
+              Math.ceil(columnResizerWidth / 2)
             }
             onDrop={(_, data) => {
               setColumns(prevColumns =>

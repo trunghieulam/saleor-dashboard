@@ -4,6 +4,7 @@ const cellHeight = 48;
 const headerCellHeight = 42;
 const actionBarWidth = 80;
 export const rowIndicatorWidth = 80;
+export const columnResizerWidth = 9;
 
 const useStyles = makeStyles(
   theme => ({
