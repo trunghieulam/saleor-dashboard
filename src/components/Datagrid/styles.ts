@@ -1,7 +1,7 @@
 import { makeStyles } from "@saleor/macaw-ui";
 
-const cellHeight = 48;
-const headerCellHeight = 42;
+const cellHeight = 50;
+const headerCellHeight = 44;
 const actionBarWidth = 80;
 export const rowIndicatorWidth = 80;
 export const columnResizerWidth = 9;
@@ -11,7 +11,6 @@ const useStyles = makeStyles(
     actions: {
       background: theme.palette.saleor.background.default,
       position: "absolute",
-      height: "100%",
       tableLayout: "fixed",
       borderCollapse: "collapse",
       width: actionBarWidth + 1,
@@ -19,7 +18,7 @@ const useStyles = makeStyles(
       top: 0
     },
     actionRow: {
-      "&:first-child td": {
+      "&:first-child th": {
         height: headerCellHeight
       },
       "& td": {
