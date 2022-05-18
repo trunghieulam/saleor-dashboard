@@ -10,8 +10,13 @@ function getId(row: DatagridCell[]): string {
   return row[0].id;
 }
 
+export type AvailableColumn = Record<"label" | "value", string>;
+export interface ColumnState extends AvailableColumn {
+  width: number;
+}
+
 export interface UseDatagridOpts<T> {
-  availableColumns: Array<Record<"label" | "value", string>>;
+  availableColumns: AvailableColumn[];
   data: T[];
   getData: (row: T, column: string) => DatagridCell;
   onChange: (data: Matrix<DatagridCell>) => void;
@@ -23,7 +28,7 @@ function useDatagrid<T extends { id: string }>({
   getData,
   onChange: onChangeBase
 }: UseDatagridOpts<T>) {
-  const [columns, setColumns] = useState(
+  const [columns, setColumns] = useState<ColumnState[]>(
     availableColumns.map(c => ({
       ...c,
       width: 200
@@ -86,14 +91,37 @@ function useDatagrid<T extends { id: string }>({
     [setColumns]
   );
 
+  const onColumnMove = useCallback(
+    (columnIndex, targetIndex) =>
+      setColumns(columns => {
+        const c = [...columns];
+        const r = c.splice(targetIndex, 1)[0];
+        c.splice(columnIndex, 0, r);
+
+        return c;
+      }),
+    [setColumns]
+  );
+
+  const onColumnResize = useCallback(
+    (column: ColumnState, move: number) =>
+      setColumns(prevColumns =>
+        prevColumns.map(pc =>
+          pc.value === column.value ? { ...pc, width: pc.width + move } : pc
+        )
+      ),
+    [setColumns]
+  );
+
   return {
     columns,
-    setColumns,
     data,
     rows,
     setRows,
     onChange,
-    onColumnChange
+    onColumnChange,
+    onColumnMove,
+    onColumnResize
   };
 }
 

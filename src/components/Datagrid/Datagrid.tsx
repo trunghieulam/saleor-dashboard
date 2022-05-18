@@ -26,10 +26,10 @@ export const Datagrid = <T extends { id: string }>({
     columns,
     data,
     rows,
-    setColumns,
-    setRows,
     onChange,
-    onColumnChange
+    onColumnChange,
+    onColumnMove,
+    onColumnResize
   } = useDatagrid(hookOpts);
 
   const [query, setQuery] = React.useState("");
@@ -64,12 +64,7 @@ export const Datagrid = <T extends { id: string }>({
                   e.dataTransfer.getData("text/plain"),
                   10
                 );
-                setColumns(columns => {
-                  const c = [...columns];
-                  const r = c.splice(targetIndex, 1)[0];
-                  c.splice(column, 0, r);
-                  return c;
-                });
+                onColumnMove(column, targetIndex);
               }}
             >
               {label}
@@ -98,15 +93,7 @@ export const Datagrid = <T extends { id: string }>({
               columns.slice(0, index + 1).reduce((acc, v) => acc + v.width, 0) -
               Math.ceil(columnResizerWidth / 2)
             }
-            onDrop={(_, data) => {
-              setColumns(prevColumns =>
-                prevColumns.map(pc =>
-                  pc.value === column.value
-                    ? { ...pc, width: pc.width + data.x }
-                    : pc
-                )
-              );
-            }}
+            onDrop={(_, data) => onColumnResize(column, data.x)}
           />
         ))}
       </div>
