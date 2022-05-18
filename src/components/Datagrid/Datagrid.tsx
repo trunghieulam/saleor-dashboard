@@ -2,75 +2,38 @@ import { Checkbox } from "@material-ui/core";
 import { MoreHorizontalIcon } from "@saleor/macaw-ui";
 import { toggle } from "@saleor/utils/lists";
 import React from "react";
-import Spreadsheet, { CellBase, Matrix } from "react-spreadsheet";
+import Spreadsheet from "react-spreadsheet";
 
 import CardMenu, { CardMenuItem } from "../CardMenu";
 import ColumnPicker from "../ColumnPicker";
 import Column from "./Column";
 import ColumnResize from "./ColumnResize";
 import useStyles, { columnResizerWidth, rowIndicatorWidth } from "./styles";
+import useDatagrid, { UseDatagridOpts } from "./useDatagrid";
 
-export interface DatagridCell extends CellBase<string> {
-  column: string;
-  id: string;
-}
-
-export interface DatagridProps<T extends { id: string }> {
-  availableColumns: Array<Record<"label" | "value", string>>;
-  data: T[];
-  getData: (row: T, column: string) => DatagridCell;
+export interface DatagridProps<T extends { id: string }>
+  extends UseDatagridOpts<T> {
   menuItems: (id: string) => CardMenuItem[];
-  onChange: (data: Matrix<DatagridCell>) => void;
-}
-
-function getId(row: DatagridCell[]): string {
-  return row[0].id;
 }
 
 export const Datagrid = <T extends { id: string }>({
-  availableColumns,
-  data: initial,
-  getData,
   menuItems,
-  onChange
+  ...hookOpts
 }: DatagridProps<T>): React.ReactElement => {
   const classes = useStyles();
 
-  const [columns, setColumns] = React.useState(
-    availableColumns.map(c => ({
-      ...c,
-      width: 200
-    }))
-  );
-  const [rows, setRows] = React.useState<string[]>(initial.map(d => d.id));
+  const {
+    columns,
+    data,
+    rows,
+    setColumns,
+    setRows,
+    onChange,
+    onColumnChange
+  } = useDatagrid(hookOpts);
+
   const [query, setQuery] = React.useState("");
   const [selected, setSelected] = React.useState<string[]>([]);
-
-  // May contain formulas
-  const [data, setData] = React.useState<Matrix<DatagridCell>>([]);
-  const dataRef = React.useRef<Matrix<DatagridCell>>(data);
-  const updateRef = (d: Matrix<DatagridCell>) => {
-    dataRef.current = d;
-  };
-
-  React.useEffect(() => {
-    const newData = initial.map(v => columns.map(c => getData(v, c.value)));
-    setRows(initial.map(d => d.id));
-    setData(newData);
-    updateRef(newData);
-  }, [initial]);
-
-  React.useEffect(() => {
-    if (rows.length && columns.length) {
-      const newData = dataRef.current
-        .map((_, index) =>
-          dataRef.current.find(row => getId(row) === rows[index])
-        )
-        .map(row => columns.map(c => row.find(f => f.column === c.value)));
-      setData(newData);
-      updateRef(newData);
-    }
-  }, [columns, rows]);
 
   return (
     <div className={classes.wrapper}>
@@ -125,20 +88,7 @@ export const Datagrid = <T extends { id: string }>({
             </td>
           )}
           CornerIndicator={() => <th />}
-          onChange={data => {
-            const fixedData = data.map((row, rowIndex) =>
-              row.map((cell, cellIndex) =>
-                cell === undefined
-                  ? {
-                      ...getData(initial[rowIndex], columns[cellIndex].value),
-                      value: ""
-                    }
-                  : cell
-              )
-            );
-            updateRef(fixedData);
-            onChange(fixedData);
-          }}
+          onChange={onChange}
         />
         {columns.slice(0, -1).map((column, index) => (
           <ColumnResize
@@ -168,19 +118,12 @@ export const Datagrid = <T extends { id: string }>({
                 IconButtonProps={{
                   variant: "secondary"
                 }}
-                availableColumns={availableColumns}
+                availableColumns={hookOpts.availableColumns}
                 initialColumns={columns}
-                defaultColumns={availableColumns.map(({ value }) => value)}
-                onSave={columnNames =>
-                  setColumns(prevColumns =>
-                    columnNames.map(column => ({
-                      ...availableColumns.find(c => c.value === column),
-                      width:
-                        prevColumns.find(pc => pc.value === column)?.width ??
-                        200
-                    }))
-                  )
-                }
+                defaultColumns={hookOpts.availableColumns.map(
+                  ({ value }) => value
+                )}
+                onSave={onColumnChange}
                 hasMore={false}
                 loading={false}
                 onFetchMore={() => undefined}
