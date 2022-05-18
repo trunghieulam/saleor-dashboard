@@ -1,9 +1,9 @@
 import { makeStyles } from "@saleor/macaw-ui";
 
-const cellHeight = 50;
-const headerCellHeight = 44;
-const actionBarWidth = 80;
-export const rowIndicatorWidth = 80;
+const cellHeight = 52;
+const headerCellHeight = 52;
+const actionBarWidth = 44;
+export const rowIndicatorWidth = 44;
 export const columnResizerWidth = 9;
 
 const useStyles = makeStyles(
@@ -23,6 +23,7 @@ const useStyles = makeStyles(
       },
       "& td": {
         border: `1px solid ${theme.palette.saleor.main[5]}`,
+        borderRight: "none",
         height: cellHeight
       }
     },
@@ -36,7 +37,14 @@ const useStyles = makeStyles(
       position: "absolute",
       top: 0
     },
+    cornerIndicator: {
+      height: headerCellHeight
+    },
     rowIndicator: {
+      border: "1px solid var(--border-color)",
+      borderLeft: "none"
+    },
+    rowIndicatorCol: {
       width: rowIndicatorWidth
     },
     scrollable: {

@@ -1,5 +1,10 @@
 import { Checkbox } from "@material-ui/core";
-import { MoreHorizontalIcon } from "@saleor/macaw-ui";
+import {
+  Button,
+  DeleteIcon,
+  IconButton,
+  MoreHorizontalIcon
+} from "@saleor/macaw-ui";
 import { toggle } from "@saleor/utils/lists";
 import React from "react";
 import Spreadsheet from "react-spreadsheet";
@@ -45,7 +50,7 @@ export const Datagrid = <T extends { id: string }>({
           Table={({ children }) => (
             <table className={classes.table}>
               <colgroup>
-                <col className={classes.rowIndicator} />
+                <col className={classes.rowIndicatorCol} />
                 {columns.map(({ value, width }) => (
                   <col key={value} style={{ width }} />
                 ))}
@@ -54,24 +59,28 @@ export const Datagrid = <T extends { id: string }>({
               <tbody>{children}</tbody>
             </table>
           )}
-          ColumnIndicator={({ column, label, onSelect }) => (
-            <Column
-              onClick={() => onSelect(column, true)}
-              draggable
-              data-column={column}
-              onDrop={e => {
-                const targetIndex = parseInt(
-                  e.dataTransfer.getData("text/plain"),
-                  10
-                );
-                onColumnMove(column, targetIndex);
-              }}
-            >
-              {label}
-            </Column>
-          )}
+          ColumnIndicator={({ column, label, onSelect }) =>
+            selected.length === 0 ? (
+              <Column
+                onClick={() => onSelect(column, true)}
+                draggable
+                data-column={column}
+                onDrop={e => {
+                  const targetIndex = parseInt(
+                    e.dataTransfer.getData("text/plain"),
+                    10
+                  );
+                  onColumnMove(column, targetIndex);
+                }}
+              >
+                {label}
+              </Column>
+            ) : column === 0 ? (
+              <th colSpan={columns.length}>toolbar</th>
+            ) : null
+          }
           RowIndicator={({ row }) => (
-            <td>
+            <td className={classes.rowIndicator}>
               <Checkbox
                 checked={selected.includes(data[row][0].id)}
                 onChange={() =>
@@ -82,7 +91,23 @@ export const Datagrid = <T extends { id: string }>({
               />
             </td>
           )}
-          CornerIndicator={() => <th />}
+          CornerIndicator={() => (
+            <th className={classes.cornerIndicator}>
+              <Checkbox
+                checked={selected.length === data.length}
+                indeterminate={
+                  selected.length > 0 && selected.length !== data.length
+                }
+                onChange={() =>
+                  setSelected(prevSelected =>
+                    prevSelected.length === data.length
+                      ? []
+                      : hookOpts.data.map(d => d.id)
+                  )
+                }
+              />
+            </th>
+          )}
           onChange={onChange}
         />
         {columns.slice(0, -1).map((column, index) => (
@@ -101,22 +126,40 @@ export const Datagrid = <T extends { id: string }>({
         <tbody>
           <tr className={classes.actionRow}>
             <th>
-              <ColumnPicker
-                IconButtonProps={{
-                  variant: "secondary"
-                }}
-                availableColumns={hookOpts.availableColumns}
-                initialColumns={columns}
-                defaultColumns={hookOpts.availableColumns.map(
-                  ({ value }) => value
-                )}
-                onSave={onColumnChange}
-                hasMore={false}
-                loading={false}
-                onFetchMore={() => undefined}
-                onQueryChange={setQuery}
-                query={query}
-              />
+              {selected.length === 0 ? (
+                <ColumnPicker
+                  IconButtonProps={{
+                    variant: "secondary"
+                  }}
+                  availableColumns={hookOpts.availableColumns}
+                  initialColumns={columns}
+                  defaultColumns={hookOpts.availableColumns.map(
+                    ({ value }) => value
+                  )}
+                  onSave={onColumnChange}
+                  hasMore={false}
+                  loading={false}
+                  onFetchMore={() => undefined}
+                  onQueryChange={setQuery}
+                  query={query}
+                />
+              ) : (
+                <div
+                  style={{
+                    display: "flex",
+                    gap: 8,
+                    position: "absolute",
+                    top: 0,
+                    right: 0
+                  }}
+                >
+                  <IconButton variant="secondary">
+                    <DeleteIcon />
+                  </IconButton>
+                  <Button variant="tertiary">Publish</Button>
+                  <Button variant="tertiary">Something</Button>
+                </div>
+              )}
             </th>
           </tr>
           {data.map((_, rowIndex) => (
