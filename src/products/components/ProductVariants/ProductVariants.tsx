@@ -53,12 +53,13 @@ export const ProductVariants: React.FC<ProductVariantsProps> = ({
       availableColumns={columns}
       data={variants}
       getData={getData}
-      menuItems={row => [
+      menuItems={id => [
         {
           label: "Edit Variant",
-          onSelect: () => onRowClick(row[0].id)
+          onSelect: () => onRowClick(id)
         }
       ]}
+      onChange={() => undefined}
     />
   );
 };

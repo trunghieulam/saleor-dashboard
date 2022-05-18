@@ -56,7 +56,10 @@ const useStyles = makeStyles(
       "& th": {
         fontWeight: 400,
         height: headerCellHeight,
-        textAlign: "left"
+        textAlign: "left",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis"
       },
       "& .Spreadsheet__cell": {
         height: cellHeight
