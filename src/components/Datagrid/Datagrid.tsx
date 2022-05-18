@@ -1,4 +1,6 @@
+import { Checkbox } from "@material-ui/core";
 import { MoreHorizontalIcon } from "@saleor/macaw-ui";
+import { toggle } from "@saleor/utils/lists";
 import React from "react";
 import Spreadsheet, { CellBase, Matrix } from "react-spreadsheet";
 
@@ -13,18 +15,24 @@ export interface DatagridCell extends CellBase<string> {
   id: string;
 }
 
-export interface DatagridProps<T> {
+export interface DatagridProps<T extends { id: string }> {
   availableColumns: Array<Record<"label" | "value", string>>;
   data: T[];
   getData: (row: T, column: string) => DatagridCell;
-  menuItems: (row: DatagridCell[]) => CardMenuItem[];
+  menuItems: (id: string) => CardMenuItem[];
+  onChange: (data: Matrix<DatagridCell>) => void;
 }
 
-export const Datagrid = <T,>({
+function getId(row: DatagridCell[]): string {
+  return row[0].id;
+}
+
+export const Datagrid = <T extends { id: string }>({
   availableColumns,
   data: initial,
   getData,
-  menuItems
+  menuItems,
+  onChange
 }: DatagridProps<T>): React.ReactElement => {
   const classes = useStyles();
 
@@ -34,20 +42,35 @@ export const Datagrid = <T,>({
       width: 200
     }))
   );
+  const [rows, setRows] = React.useState<string[]>(initial.map(d => d.id));
   const [query, setQuery] = React.useState("");
+  const [selected, setSelected] = React.useState<string[]>([]);
 
   // May contain formulas
   const [data, setData] = React.useState<Matrix<DatagridCell>>([]);
+  const dataRef = React.useRef<Matrix<DatagridCell>>(data);
+  const updateRef = (d: Matrix<DatagridCell>) => {
+    dataRef.current = d;
+  };
 
   React.useEffect(() => {
-    setData((initial ?? []).map(v => columns.map(c => getData(v, c.value))));
+    const newData = initial.map(v => columns.map(c => getData(v, c.value)));
+    setRows(initial.map(d => d.id));
+    setData(newData);
+    updateRef(newData);
   }, [initial]);
 
   React.useEffect(() => {
-    setData(prevData =>
-      prevData.map(row => columns.map(c => row.find(f => f.column === c.value)))
-    );
-  }, [columns]);
+    if (rows.length && columns.length) {
+      const newData = dataRef.current
+        .map((_, index) =>
+          dataRef.current.find(row => getId(row) === rows[index])
+        )
+        .map(row => columns.map(c => row.find(f => f.column === c.value)));
+      setData(newData);
+      updateRef(newData);
+    }
+  }, [columns, rows]);
 
   return (
     <div className={classes.wrapper}>
@@ -89,8 +112,32 @@ export const Datagrid = <T,>({
               {label}
             </Column>
           )}
+          RowIndicator={({ row }) => (
+            <td>
+              <Checkbox
+                checked={selected.includes(data[row][0].id)}
+                onChange={() =>
+                  setSelected(
+                    toggle(data[row][0].id, selected, (a, b) => a === b)
+                  )
+                }
+              />
+            </td>
+          )}
+          CornerIndicator={() => <th />}
           onChange={data => {
-            setData(data);
+            const fixedData = data.map((row, rowIndex) =>
+              row.map((cell, cellIndex) =>
+                cell === undefined
+                  ? {
+                      ...getData(initial[rowIndex], columns[cellIndex].value),
+                      value: ""
+                    }
+                  : cell
+              )
+            );
+            updateRef(fixedData);
+            onChange(fixedData);
           }}
         />
         {columns.slice(0, -1).map((column, index) => (
@@ -142,12 +189,12 @@ export const Datagrid = <T,>({
               />
             </th>
           </tr>
-          {data.map(row => (
-            <tr className={classes.actionRow}>
+          {data.map((_, rowIndex) => (
+            <tr key={rows[rowIndex]} className={classes.actionRow}>
               <td>
                 <CardMenu
                   Icon={MoreHorizontalIcon}
-                  menuItems={menuItems(row)}
+                  menuItems={menuItems(rows[rowIndex])}
                 />
               </td>
             </tr>
