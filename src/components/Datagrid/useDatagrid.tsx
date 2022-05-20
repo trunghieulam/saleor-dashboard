@@ -1,43 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { CellBase, Matrix } from "react-spreadsheet";
+import { Matrix } from "react-spreadsheet";
 
 import { MoneyCellEdit, MoneyCellView } from "./MoneyCell";
 import { MoneyToggleCellView } from "./MoneyToggleCell";
-
-interface DatagridCellBase extends CellBase<string> {
-  column: string;
-  id: string;
-}
-
-export interface StringDatagridCell extends DatagridCellBase {
-  type: "string";
-}
-
-export interface MoneyDatagridCell extends DatagridCellBase {
-  currency: string;
-  type: "money";
-}
-
-export interface MoneyToggleDatagridCell extends DatagridCellBase {
-  currency: string;
-  toggled: boolean;
-  type: "moneyToggle";
-}
-
-export type DatagridCell =
-  | StringDatagridCell
-  | MoneyDatagridCell
-  | MoneyToggleDatagridCell;
+import { AvailableColumn, ColumnState, DatagridCell } from "./types";
 
 function getId(row: DatagridCell[]): string {
   return row[0].id;
-}
-
-export type AvailableColumn = Record<"label" | "value", string> & {
-  type: DatagridCell["type"];
-};
-export interface ColumnState extends AvailableColumn {
-  width: number;
 }
 
 export interface UseDatagridOpts<T> {

@@ -2,7 +2,7 @@ import React from "react";
 import { DataViewerComponent } from "react-spreadsheet";
 
 import Money from "../Money";
-import { MoneyToggleDatagridCell } from "./useDatagrid";
+import { MoneyToggleDatagridCell } from "./types";
 
 export const MoneyToggleCellView: DataViewerComponent<MoneyToggleDatagridCell> = ({
   cell,

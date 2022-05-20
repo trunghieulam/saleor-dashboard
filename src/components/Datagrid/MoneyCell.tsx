@@ -3,7 +3,7 @@ import { DataEditorComponent, DataViewerComponent } from "react-spreadsheet";
 
 import Money from "../Money";
 import { usePriceField } from "../PriceField/usePriceField";
-import { MoneyDatagridCell } from "./useDatagrid";
+import { MoneyDatagridCell } from "./types";
 
 export const MoneyCellView: DataViewerComponent<MoneyDatagridCell> = ({
   cell

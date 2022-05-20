@@ -9,7 +9,7 @@ import React from "react";
 import { useIntl } from "react-intl";
 
 import { ChannelProps, ListActions, ReorderAction } from "../../../types";
-import { getColumnName, getData } from "./utils";
+import { getColumnData, getData } from "./utils";
 
 interface ProductVariantsProps extends ListActions, ChannelProps {
   productId: string;
@@ -43,7 +43,7 @@ export const ProductVariants: React.FC<ProductVariantsProps> = ({
             ...variants[0]?.attributes.map(
               attribute => `attribute:${attribute.attribute.id}`
             )
-          ].map(c => ({ label: getColumnName(c, variants, intl), value: c }))
+          ].map(c => getColumnData(c, variants, intl))
         : [],
     [variants]
   );
