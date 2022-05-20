@@ -3,6 +3,7 @@ import { Matrix } from "react-spreadsheet";
 
 import { MoneyCellEdit, MoneyCellView } from "./MoneyCell";
 import { MoneyToggleCellView } from "./MoneyToggleCell";
+import { NumberCellEdit } from "./NumberCell";
 import { AvailableColumn, ColumnState, DatagridCell } from "./types";
 
 function getId(row: DatagridCell[]): string {
@@ -47,12 +48,11 @@ function useDatagrid<T extends { id: string }>({
             : c.type === "moneyToggle"
             ? MoneyToggleCellView
             : undefined,
-        DataEditor:
-          c.type === "money"
-            ? MoneyCellEdit
-            : c.type === "moneyToggle"
-            ? MoneyCellEdit
-            : undefined
+        DataEditor: ["money", "moneyToggle"].includes(c.type)
+          ? MoneyCellEdit
+          : c.type === "number"
+          ? NumberCellEdit
+          : undefined
       }))
     );
     setRows(initial.map(d => d.id));

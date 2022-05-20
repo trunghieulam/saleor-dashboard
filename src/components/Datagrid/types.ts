@@ -9,6 +9,13 @@ export interface StringDatagridCell extends DatagridCellBase {
   type: "string";
 }
 
+export interface NumberDatagridCell extends DatagridCellBase {
+  type: "number";
+  min?: number;
+  max?: number;
+  step?: number;
+}
+
 export interface MoneyDatagridCell extends DatagridCellBase {
   currency: string;
   type: "money";
@@ -22,6 +29,7 @@ export interface MoneyToggleDatagridCell extends DatagridCellBase {
 
 export type DatagridCell =
   | StringDatagridCell
+  | NumberDatagridCell
   | MoneyDatagridCell
   | MoneyToggleDatagridCell;
 

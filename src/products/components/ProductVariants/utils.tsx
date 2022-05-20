@@ -106,7 +106,7 @@ export function getColumnData(
         .map(variant => variant.stocks.map(stock => stock.warehouse))
         .flat()
         .find(warehouse => warehouse.id === name.match(isStockColumn)[1])?.name,
-      type: "string"
+      type: "number"
     };
   }
 

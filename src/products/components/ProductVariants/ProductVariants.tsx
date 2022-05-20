@@ -36,10 +36,10 @@ export const ProductVariants: React.FC<ProductVariantsProps> = ({
             "name",
             "sku",
             "margin",
-            ...variants[0]?.stocks.map(stock => `stock:${stock.warehouse.id}`),
             ...variants[0]?.channelListings.map(
               channel => `channel:${channel.channel.id}`
             ),
+            ...variants[0]?.stocks.map(stock => `stock:${stock.warehouse.id}`),
             ...variants[0]?.attributes.map(
               attribute => `attribute:${attribute.attribute.id}`
             )
