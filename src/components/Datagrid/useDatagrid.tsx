@@ -1,16 +1,41 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { CellBase, Matrix } from "react-spreadsheet";
 
-export interface DatagridCell extends CellBase<string> {
+import { MoneyCellEdit, MoneyCellView } from "./MoneyCell";
+import { MoneyToggleCellView } from "./MoneyToggleCell";
+
+interface DatagridCellBase extends CellBase<string> {
   column: string;
   id: string;
 }
+
+export interface StringDatagridCell extends DatagridCellBase {
+  type: "string";
+}
+
+export interface MoneyDatagridCell extends DatagridCellBase {
+  currency: string;
+  type: "money";
+}
+
+export interface MoneyToggleDatagridCell extends DatagridCellBase {
+  currency: string;
+  toggled: boolean;
+  type: "moneyToggle";
+}
+
+export type DatagridCell =
+  | StringDatagridCell
+  | MoneyDatagridCell
+  | MoneyToggleDatagridCell;
 
 function getId(row: DatagridCell[]): string {
   return row[0].id;
 }
 
-export type AvailableColumn = Record<"label" | "value", string>;
+export type AvailableColumn = Record<"label" | "value", string> & {
+  type: DatagridCell["type"];
+};
 export interface ColumnState extends AvailableColumn {
   width: number;
 }
@@ -44,7 +69,23 @@ function useDatagrid<T extends { id: string }>({
   };
 
   useEffect(() => {
-    const newData = initial.map(v => columns.map(c => getData(v, c.value)));
+    const newData = initial.map(v =>
+      columns.map<DatagridCell>(c => ({
+        ...getData(v, c.value),
+        DataViewer:
+          c.type === "money"
+            ? MoneyCellView
+            : c.type === "moneyToggle"
+            ? MoneyToggleCellView
+            : undefined,
+        DataEditor:
+          c.type === "money"
+            ? MoneyCellEdit
+            : c.type === "moneyToggle"
+            ? MoneyCellEdit
+            : undefined
+      }))
+    );
     setRows(initial.map(d => d.id));
     setData(newData);
     updateRef(newData);
@@ -63,12 +104,13 @@ function useDatagrid<T extends { id: string }>({
   }, [columns, rows]);
 
   const onChange = useCallback(
-    data => {
+    (data: Matrix<DatagridCell>) => {
       const fixedData = data.map((row, rowIndex) =>
         row.map((cell, cellIndex) =>
           cell === undefined
             ? {
                 ...getData(initial[rowIndex], columns[cellIndex].value),
+                ...(cell.type === "moneyToggle" ? { toggled: false } : {}),
                 value: ""
               }
             : cell
@@ -81,7 +123,7 @@ function useDatagrid<T extends { id: string }>({
   );
 
   const onColumnChange = useCallback(
-    columnNames =>
+    (columnNames: string[]) =>
       setColumns(prevColumns =>
         columnNames.map(column => ({
           ...availableColumns.find(c => c.value === column),
