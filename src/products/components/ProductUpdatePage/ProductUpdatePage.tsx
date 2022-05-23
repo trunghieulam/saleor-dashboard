@@ -47,13 +47,7 @@ import ProductExternalMediaDialog from "@saleor/products/components/ProductExter
 import ProductVariantPrice from "@saleor/products/components/ProductVariantPrice";
 import { productImageUrl, productListUrl } from "@saleor/products/urls";
 import { ChannelsWithVariantsData } from "@saleor/products/views/ProductUpdate/types";
-import {
-  ChannelProps,
-  FetchMoreProps,
-  ListActions,
-  RelayToFlat,
-  ReorderAction
-} from "@saleor/types";
+import { FetchMoreProps, RelayToFlat } from "@saleor/types";
 import React from "react";
 import { useIntl } from "react-intl";
 
@@ -71,7 +65,7 @@ import ProductUpdateForm, {
   ProductUpdateHandlers
 } from "./form";
 
-export interface ProductUpdatePageProps extends ListActions, ChannelProps {
+export interface ProductUpdatePageProps {
   productId: string;
   channelsWithVariantsData: ChannelsWithVariantsData;
   setChannelsData: (data: ChannelData[]) => void;
@@ -114,9 +108,8 @@ export interface ProductUpdatePageProps extends ListActions, ChannelProps {
   fetchAttributeValues: (query: string, attributeId: string) => void;
   onAssignReferencesClick: (attribute: AttributeInput) => void;
   onCloseDialog: () => void;
-  onVariantsAdd: () => void;
+  onVariantBulkDelete: (ids: string[]) => void;
   onVariantShow: (id: string) => void;
-  onVariantReorder: ReorderAction;
   onVariantEndPreorderDialogOpen: () => void;
   onImageDelete: (id: string) => () => void;
   onSubmit: (data: ProductUpdatePageSubmitData) => SubmitPromise;
@@ -127,7 +120,7 @@ export interface ProductUpdatePageProps extends ListActions, ChannelProps {
   onImageUpload(file: File);
   onMediaUrlUpload(mediaUrl: string);
   onSeoClick?();
-  onSetDefaultVariant(variant: ProductDetailsVariantFragment);
+  onSetDefaultVariant(id: string);
   onWarehouseConfigure();
 }
 
@@ -178,19 +171,12 @@ export const ProductUpdatePage: React.FC<ProductUpdatePageProps> = ({
   onSeoClick,
   onSubmit,
   channelsData,
-  onVariantsAdd,
+  onVariantBulkDelete,
   onVariantShow,
   onSetDefaultVariant,
-  onVariantReorder,
   onVariantEndPreorderDialogOpen,
   onWarehouseConfigure,
-  isChecked,
   isMediaUrlModalVisible,
-  selected,
-  selectedChannelId,
-  toggle,
-  toggleAll,
-  toolbar,
   assignReferencesAttributeId,
   onAssignReferencesClick,
   fetchReferencePages,
@@ -357,21 +343,11 @@ export const ProductUpdatePage: React.FC<ProductUpdatePageProps> = ({
                 )}
                 {hasVariants ? (
                   <ProductVariants
-                    productId={productId}
-                    disabled={disabled}
                     limits={limits}
                     variants={variants}
-                    product={product}
-                    onVariantsAdd={onVariantsAdd}
+                    onVariantBulkDelete={onVariantBulkDelete}
                     onRowClick={onVariantShow}
-                    onVariantReorder={onVariantReorder}
                     onSetDefaultVariant={onSetDefaultVariant}
-                    toolbar={toolbar}
-                    isChecked={isChecked}
-                    selected={selected}
-                    selectedChannelId={selectedChannelId}
-                    toggle={toggle}
-                    toggleAll={toggleAll}
                   />
                 ) : (
                   <>

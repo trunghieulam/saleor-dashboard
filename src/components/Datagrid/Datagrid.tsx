@@ -1,10 +1,5 @@
 import { Checkbox } from "@material-ui/core";
-import {
-  Button,
-  DeleteIcon,
-  IconButton,
-  MoreHorizontalIcon
-} from "@saleor/macaw-ui";
+import { MoreHorizontalIcon } from "@saleor/macaw-ui";
 import { toggle } from "@saleor/utils/lists";
 import React from "react";
 import Spreadsheet from "react-spreadsheet";
@@ -18,10 +13,12 @@ import useDatagrid, { UseDatagridOpts } from "./useDatagrid";
 
 export interface DatagridProps<T extends { id: string }>
   extends UseDatagridOpts<T> {
+  children: (selected: string[]) => React.ReactNode;
   menuItems: (id: string) => CardMenuItem[];
 }
 
 export const Datagrid = <T extends { id: string }>({
+  children,
   menuItems,
   ...hookOpts
 }: DatagridProps<T>): React.ReactElement => {
@@ -153,11 +150,7 @@ export const Datagrid = <T extends { id: string }>({
                     right: 0
                   }}
                 >
-                  <IconButton variant="secondary">
-                    <DeleteIcon />
-                  </IconButton>
-                  <Button variant="tertiary">Publish</Button>
-                  <Button variant="tertiary">Something</Button>
+                  {children(selected)}
                 </div>
               )}
             </th>

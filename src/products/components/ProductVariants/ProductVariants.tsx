@@ -1,30 +1,27 @@
 import Datagrid from "@saleor/components/Datagrid/Datagrid";
 import {
   ProductDetailsVariantFragment,
-  ProductFragment,
   RefreshLimitsQuery
 } from "@saleor/graphql";
+import { buttonMessages } from "@saleor/intl";
+import { Button } from "@saleor/macaw-ui";
 // import { isLimitReached } from "@saleor/utils/limits";
 import React from "react";
-import { useIntl } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 
-import { ChannelProps, ListActions, ReorderAction } from "../../../types";
 import { getColumnData, getData } from "./utils";
 
-interface ProductVariantsProps extends ListActions, ChannelProps {
-  productId: string;
-  disabled: boolean;
+interface ProductVariantsProps {
   limits: RefreshLimitsQuery["shop"]["limits"];
-  product: ProductFragment;
   variants: ProductDetailsVariantFragment[];
-  onVariantReorder: ReorderAction;
+  onVariantBulkDelete: (ids: string[]) => void;
   onRowClick: (id: string) => void;
-  onSetDefaultVariant(variant: ProductDetailsVariantFragment);
-  onVariantsAdd();
+  onSetDefaultVariant: (id: string) => void;
 }
 
 export const ProductVariants: React.FC<ProductVariantsProps> = ({
   variants,
+  onVariantBulkDelete,
   onRowClick
 }) => {
   const intl = useIntl();
@@ -60,7 +57,16 @@ export const ProductVariants: React.FC<ProductVariantsProps> = ({
         }
       ]}
       onChange={() => undefined}
-    />
+    >
+      {selected => (
+        <Button
+          variant="tertiary"
+          onClick={() => onVariantBulkDelete(selected)}
+        >
+          <FormattedMessage {...buttonMessages.delete} />
+        </Button>
+      )}
+    </Datagrid>
   );
 };
 ProductVariants.displayName = "ProductVariants";

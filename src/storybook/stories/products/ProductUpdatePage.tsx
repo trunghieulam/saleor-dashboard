@@ -2,12 +2,7 @@ import placeholderImage from "@assets/images/placeholder255x255.png";
 import { channelsList } from "@saleor/channels/fixtures";
 import { createChannelsData } from "@saleor/channels/utils";
 import { collections } from "@saleor/collections/fixtures";
-import {
-  fetchMoreProps,
-  limits,
-  limitsReached,
-  listActionsProps
-} from "@saleor/fixtures";
+import { fetchMoreProps, limits, limitsReached } from "@saleor/fixtures";
 import { ProductErrorCode } from "@saleor/graphql";
 import ProductUpdatePage, {
   ProductUpdatePageProps
@@ -25,7 +20,6 @@ const product = productFixture(placeholderImage);
 const channels = createChannelsData(channelsList);
 
 const props: ProductUpdatePageProps = {
-  ...listActionsProps,
   productId: "123",
   allChannelsCount: 5,
   onChannelsChange: () => undefined,
@@ -64,8 +58,7 @@ const props: ProductUpdatePageProps = {
   onMediaUrlUpload: () => undefined,
   onSetDefaultVariant: () => undefined,
   onSubmit: () => undefined,
-  onVariantReorder: () => undefined,
-  onVariantsAdd: () => undefined,
+  onVariantBulkDelete: () => undefined,
   onVariantShow: () => undefined,
   onVariantEndPreorderDialogOpen: () => undefined,
   onWarehouseConfigure: () => undefined,
@@ -75,7 +68,6 @@ const props: ProductUpdatePageProps = {
   referencePages: [],
   referenceProducts: [],
   saveButtonBarState: "default",
-  selectedChannelId: "123",
   taxTypes,
   variants: product.variants,
   warehouses: warehouseList,

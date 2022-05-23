@@ -1,3 +1,4 @@
+import { Button } from "@saleor/macaw-ui";
 import Decorator from "@saleor/storybook/Decorator";
 import { storiesOf } from "@storybook/react";
 import React from "react";
@@ -137,7 +138,7 @@ const data = [
   }
 ];
 
-const props: DatagridProps<typeof data[0]> = {
+const props: Omit<DatagridProps<typeof data[0]>, "children"> = {
   availableColumns: [
     { label: "ID", value: "uuid", type: "string" },
     { label: "Loaned", value: "loan", type: "moneyToggle" },
@@ -186,6 +187,25 @@ storiesOf("Generics / Datagrid", module)
   .addDecorator(Decorator)
   .add("default", () => (
     <div style={{ width: 800, margin: "auto" }}>
-      <Datagrid {...props} />
+      <Datagrid {...props}>
+        {selected => (
+          <>
+            <Button
+              variant="tertiary"
+              // eslint-disable-next-line no-console
+              onClick={() => console.log("action 1", selected)}
+            >
+              Action 1
+            </Button>
+            <Button
+              variant="tertiary"
+              // eslint-disable-next-line no-console
+              onClick={() => console.log("action 2", selected)}
+            >
+              Action 2
+            </Button>
+          </>
+        )}
+      </Datagrid>
     </div>
   ));
