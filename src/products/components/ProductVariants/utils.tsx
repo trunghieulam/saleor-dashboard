@@ -38,7 +38,8 @@ export function getData(
       value: variant.stocks
         .find(stock => stock.warehouse.id === column.match(isStockColumn)[1])
         ?.quantity.toString(),
-      type: "string"
+      type: "number",
+      min: 0
     };
   }
 
