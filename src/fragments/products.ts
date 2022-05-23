@@ -178,7 +178,6 @@ export const productDetailsVariant = gql`
     id
     sku
     name
-    margin
     attributes {
       attribute {
         id

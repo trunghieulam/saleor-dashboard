@@ -1,7 +1,9 @@
 import Datagrid from "@saleor/components/Datagrid/Datagrid";
 import {
+  ChannelFragment,
   ProductDetailsVariantFragment,
-  RefreshLimitsQuery
+  RefreshLimitsQuery,
+  WarehouseFragment
 } from "@saleor/graphql";
 import { buttonMessages } from "@saleor/intl";
 import { Button } from "@saleor/macaw-ui";
@@ -12,15 +14,19 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { getColumnData, getData } from "./utils";
 
 interface ProductVariantsProps {
+  channels: ChannelFragment[];
   limits: RefreshLimitsQuery["shop"]["limits"];
   variants: ProductDetailsVariantFragment[];
+  warehouses: WarehouseFragment[];
   onVariantBulkDelete: (ids: string[]) => void;
   onRowClick: (id: string) => void;
   onSetDefaultVariant: (id: string) => void;
 }
 
 export const ProductVariants: React.FC<ProductVariantsProps> = ({
+  channels,
   variants,
+  warehouses,
   onVariantBulkDelete,
   onRowClick
 }) => {
@@ -32,17 +38,14 @@ export const ProductVariants: React.FC<ProductVariantsProps> = ({
         ? [
             "name",
             "sku",
-            "margin",
-            ...variants[0]?.channelListings.map(
-              channel => `channel:${channel.channel.id}`
-            ),
-            ...variants[0]?.stocks.map(stock => `stock:${stock.warehouse.id}`),
+            ...channels?.map(channel => `channel:${channel.id}`),
+            ...warehouses?.map(warehouse => `stock:${warehouse.id}`),
             ...variants[0]?.attributes.map(
               attribute => `attribute:${attribute.attribute.id}`
             )
           ].map(c => getColumnData(c, variants, intl))
         : [],
-    [variants]
+    [variants, warehouses, channels]
   );
 
   return (

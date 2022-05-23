@@ -22,6 +22,7 @@ import PageHeader from "@saleor/components/PageHeader";
 import Savebar from "@saleor/components/Savebar";
 import SeoForm from "@saleor/components/SeoForm";
 import {
+  ChannelFragment,
   PermissionEnum,
   ProductChannelListingErrorFragment,
   ProductDetailsVariantFragment,
@@ -51,7 +52,6 @@ import { FetchMoreProps, RelayToFlat } from "@saleor/types";
 import React from "react";
 import { useIntl } from "react-intl";
 
-import ChannelsWithVariantsAvailabilityCard from "../../../channels/ChannelsWithVariantsAvailabilityCard/ChannelsWithVariantsAvailabilityCard";
 import { getChoices, ProductUpdatePageFormData } from "../../utils/data";
 import ProductDetailsForm from "../ProductDetailsForm";
 import ProductMedia from "../ProductMedia";
@@ -66,6 +66,7 @@ import ProductUpdateForm, {
 } from "./form";
 
 export interface ProductUpdatePageProps {
+  channels: ChannelFragment[];
   productId: string;
   channelsWithVariantsData: ChannelsWithVariantsData;
   setChannelsData: (data: ChannelData[]) => void;
@@ -135,6 +136,7 @@ export interface ProductUpdatePageSubmitData extends ProductUpdatePageFormData {
 }
 
 export const ProductUpdatePage: React.FC<ProductUpdatePageProps> = ({
+  channels,
   productId,
   defaultWeightUnit,
   disabled,
@@ -343,8 +345,10 @@ export const ProductUpdatePage: React.FC<ProductUpdatePageProps> = ({
                 )}
                 {hasVariants ? (
                   <ProductVariants
+                    channels={channels}
                     limits={limits}
                     variants={variants}
+                    warehouses={warehouses}
                     onVariantBulkDelete={onVariantBulkDelete}
                     onRowClick={onVariantShow}
                     onSetDefaultVariant={onSetDefaultVariant}
@@ -425,7 +429,7 @@ export const ProductUpdatePage: React.FC<ProductUpdatePageProps> = ({
                   onCollectionChange={handlers.selectCollection}
                 />
                 <CardSpacer />
-                {isSimpleProduct ? (
+                {isSimpleProduct && (
                   <ChannelsAvailabilityCard
                     managePermissions={[PermissionEnum.MANAGE_PRODUCTS]}
                     messages={{
@@ -446,28 +450,6 @@ export const ProductUpdatePage: React.FC<ProductUpdatePageProps> = ({
                     allChannelsCount={allChannelsCount}
                     channels={data.channelListings}
                     disabled={disabled}
-                    onChange={handlers.changeChannels}
-                    openModal={openChannelsModal}
-                  />
-                ) : (
-                  <ChannelsWithVariantsAvailabilityCard
-                    messages={{
-                      hiddenLabel: intl.formatMessage({
-                        id: "saKXY3",
-                        defaultMessage: "Not published",
-                        description: "product label"
-                      }),
-
-                      visibleLabel: intl.formatMessage({
-                        id: "qJedl0",
-                        defaultMessage: "Published",
-                        description: "product label"
-                      })
-                    }}
-                    errors={channelsErrors}
-                    channels={data.channelsData}
-                    channelsWithVariantsData={channelsWithVariantsData}
-                    variants={variants}
                     onChange={handlers.changeChannels}
                     openModal={openChannelsModal}
                   />

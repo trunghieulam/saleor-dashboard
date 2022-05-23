@@ -19,16 +19,13 @@ export function getData(
   variant: ProductDetailsVariantFragment,
   column: string
 ): DatagridCell {
-  switch (column) {
-    case "name":
-    case "sku":
-    case "margin":
-      return {
-        id: variant.id,
-        value: variant[column]?.toString() ?? "",
-        column,
-        type: "string"
-      };
+  if (["name", "sku"].includes(column)) {
+    return {
+      id: variant.id,
+      value: variant[column]?.toString() ?? "",
+      column,
+      type: "string"
+    };
   }
 
   if (isStockColumn.test(column)) {
@@ -53,7 +50,7 @@ export function getData(
       id: variant.id,
       value: listing?.price.amount.toString(),
       type: "moneyToggle",
-      toggled: !!listing.price,
+      toggled: !!listing?.price,
       currency: listing?.price.currency
     };
   }
@@ -84,20 +81,12 @@ export function getColumnData(
     value: name
   };
 
-  switch (name) {
-    case "name":
-    case "sku":
-      return {
-        ...common,
-        label: intl.formatMessage(messages[name]),
-        type: "string"
-      };
-    case "margin":
-      return {
-        ...common,
-        label: intl.formatMessage(messages[name]),
-        type: "money"
-      };
+  if (["name", "sku"].includes(name)) {
+    return {
+      ...common,
+      label: intl.formatMessage(messages[name]),
+      type: "string"
+    };
   }
 
   if (isStockColumn.test(name)) {
