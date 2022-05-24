@@ -3,7 +3,7 @@ import { Matrix } from "react-spreadsheet";
 
 import { MoneyCellEdit, MoneyCellView } from "./MoneyCell";
 import { MoneyToggleCellView } from "./MoneyToggleCell";
-import { NumberCellEdit } from "./NumberCell";
+import { NumberCellEdit, NumberCellView } from "./NumberCell";
 import { AvailableColumn, ColumnState, DatagridCell } from "./types";
 
 function getId(row: DatagridCell[]): string {
@@ -15,6 +15,31 @@ export interface UseDatagridOpts<T> {
   data: T[];
   getData: (row: T, column: string) => DatagridCell;
   onChange: (data: Matrix<DatagridCell>) => void;
+}
+
+function getViewer(type: DatagridCell["type"]) {
+  switch (type) {
+    case "money":
+      return MoneyCellView;
+    case "moneyToggle":
+      return MoneyToggleCellView;
+    case "number":
+      return NumberCellView;
+    default:
+      return undefined;
+  }
+}
+
+function getEditor(type: DatagridCell["type"]) {
+  switch (type) {
+    case "money":
+    case "moneyToggle":
+      return MoneyCellEdit;
+    case "number":
+      return NumberCellEdit;
+    default:
+      return undefined;
+  }
 }
 
 function useDatagrid<T extends { id: string }>({
@@ -42,17 +67,8 @@ function useDatagrid<T extends { id: string }>({
     const newData = initial.map(v =>
       columns.map<DatagridCell>(c => ({
         ...getData(v, c.value),
-        DataViewer:
-          c.type === "money"
-            ? MoneyCellView
-            : c.type === "moneyToggle"
-            ? MoneyToggleCellView
-            : undefined,
-        DataEditor: ["money", "moneyToggle"].includes(c.type)
-          ? MoneyCellEdit
-          : c.type === "number"
-          ? NumberCellEdit
-          : undefined
+        DataViewer: getViewer(c.type),
+        DataEditor: getEditor(c.type)
       }))
     );
     setRows(initial.map(d => d.id));

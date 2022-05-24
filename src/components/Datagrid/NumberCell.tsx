@@ -1,8 +1,12 @@
 import { FormChange } from "@saleor/hooks/useForm";
 import React from "react";
-import { DataEditorComponent } from "react-spreadsheet";
+import { DataEditorComponent, DataViewerComponent } from "react-spreadsheet";
 
 import { NumberDatagridCell } from "./types";
+
+export const NumberCellView: DataViewerComponent<NumberDatagridCell> = ({
+  cell
+}) => <span>{cell.value ?? "-"}</span>;
 
 export const NumberCellEdit: DataEditorComponent<NumberDatagridCell> = ({
   onChange: onChangeBase,
