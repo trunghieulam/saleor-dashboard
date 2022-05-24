@@ -39,6 +39,7 @@ jest.mock("@saleor/utils/richText/useRichText");
 });
 
 const props: ProductUpdatePageProps = {
+  channels: channelsList,
   productId: "123",
   allChannelsCount: 5,
   categories: [product.category],

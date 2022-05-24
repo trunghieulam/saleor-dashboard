@@ -20,6 +20,7 @@ const product = productFixture(placeholderImage);
 const channels = createChannelsData(channelsList);
 
 const props: ProductUpdatePageProps = {
+  channels: channelsList,
   productId: "123",
   allChannelsCount: 5,
   onChannelsChange: () => undefined,
