@@ -21,7 +21,7 @@ export const AppFrame: React.FC<Props> = ({
   appToken,
   appId,
   onLoad,
-  onError
+  onError,
 }) => {
   const shop = useShop();
   const frameRef = React.useRef<HTMLIFrameElement>();
@@ -35,8 +35,8 @@ export const AppFrame: React.FC<Props> = ({
       type: "handshake",
       payload: {
         token: appToken,
-        version: 1
-      }
+        version: 1,
+      },
     });
     sendThemeToExtension();
 

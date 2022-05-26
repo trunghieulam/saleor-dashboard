@@ -9,7 +9,7 @@ import pagesIcon from "@assets/images/menu-pages-icon.svg";
 import translationIcon from "@assets/images/menu-translation-icon.svg";
 import {
   extensionMountPoints,
-  useExtensions
+  useExtensions,
 } from "@saleor/apps/useExtensions";
 import { configurationMenuUrl } from "@saleor/configuration";
 import { getConfigMenuItemsPermissions } from "@saleor/configuration/utils";
@@ -37,7 +37,7 @@ export interface FilterableMenuItem extends Omit<SidebarMenuItem, "children"> {
 
 function useMenuStructure(
   intl: IntlShape,
-  user: UserFragment
+  user: UserFragment,
 ): [SidebarMenuItem[], (menuItem: SidebarMenuItem) => void] {
   const extensions = useExtensions(extensionMountPoints.NAVIGATION_SIDEBAR);
 
@@ -52,7 +52,7 @@ function useMenuStructure(
   const appExtensionsHeaderItem = {
     id: "extensions",
     ariaLabel: "apps",
-    label: intl.formatMessage(sectionNames.appExtensions)
+    label: intl.formatMessage(sectionNames.appExtensions),
   };
 
   const menuItems: FilterableMenuItem[] = [
@@ -61,7 +61,7 @@ function useMenuStructure(
       iconSrc: homeIcon,
       label: intl.formatMessage(sectionNames.home),
       id: "home",
-      url: "/"
+      url: "/",
     },
     {
       ariaLabel: "catalogue",
@@ -71,41 +71,41 @@ function useMenuStructure(
           label: intl.formatMessage(sectionNames.products),
           id: "products",
           url: productListUrl(),
-          permissions: [PermissionEnum.MANAGE_PRODUCTS]
+          permissions: [PermissionEnum.MANAGE_PRODUCTS],
         },
         {
           ariaLabel: "categories",
           label: intl.formatMessage(sectionNames.categories),
           id: "categories",
           url: categoryListUrl(),
-          permissions: [PermissionEnum.MANAGE_PRODUCTS]
+          permissions: [PermissionEnum.MANAGE_PRODUCTS],
         },
         {
           ariaLabel: "collections",
           label: intl.formatMessage(sectionNames.collections),
           id: "collections",
           url: collectionListUrl(),
-          permissions: [PermissionEnum.MANAGE_PRODUCTS]
+          permissions: [PermissionEnum.MANAGE_PRODUCTS],
         },
         {
           ariaLabel: "giftCards",
           label: intl.formatMessage(sectionNames.giftCards),
           id: "giftCards",
           url: giftCardListUrl(),
-          permissions: [PermissionEnum.MANAGE_GIFT_CARD]
+          permissions: [PermissionEnum.MANAGE_GIFT_CARD],
         },
         ...mapToExtensionsItems(
           extensions.NAVIGATION_CATALOG,
-          appExtensionsHeaderItem
-        )
+          appExtensionsHeaderItem,
+        ),
       ],
       iconSrc: catalogIcon,
       label: intl.formatMessage(commonMessages.catalog),
       permissions: [
         PermissionEnum.MANAGE_GIFT_CARD,
-        PermissionEnum.MANAGE_PRODUCTS
+        PermissionEnum.MANAGE_PRODUCTS,
       ],
-      id: "catalogue"
+      id: "catalogue",
     },
     {
       ariaLabel: "orders",
@@ -115,24 +115,24 @@ function useMenuStructure(
           label: intl.formatMessage(sectionNames.orders),
           permissions: [PermissionEnum.MANAGE_ORDERS],
           id: "orders",
-          url: orderListUrl()
+          url: orderListUrl(),
         },
         {
           ariaLabel: "order drafts",
           label: intl.formatMessage(commonMessages.drafts),
           permissions: [PermissionEnum.MANAGE_ORDERS],
           id: "order-drafts",
-          url: orderDraftListUrl()
+          url: orderDraftListUrl(),
         },
         ...mapToExtensionsItems(
           extensions.NAVIGATION_ORDERS,
-          appExtensionsHeaderItem
-        )
+          appExtensionsHeaderItem,
+        ),
       ],
       iconSrc: ordersIcon,
       label: intl.formatMessage(sectionNames.orders),
       permissions: [PermissionEnum.MANAGE_ORDERS],
-      id: "orders"
+      id: "orders",
     },
     {
       ariaLabel: "customers",
@@ -142,18 +142,18 @@ function useMenuStructure(
           label: intl.formatMessage(sectionNames.customers),
           permissions: [PermissionEnum.MANAGE_USERS],
           id: "customers",
-          url: customerListUrl()
+          url: customerListUrl(),
         },
         ...mapToExtensionsItems(
           extensions.NAVIGATION_CUSTOMERS,
-          appExtensionsHeaderItem
-        )
+          appExtensionsHeaderItem,
+        ),
       ],
       iconSrc: customerIcon,
       label: intl.formatMessage(sectionNames.customers),
       permissions: [PermissionEnum.MANAGE_USERS],
       id: "customers",
-      url: customerListUrl()
+      url: customerListUrl(),
     },
 
     {
@@ -163,23 +163,23 @@ function useMenuStructure(
           ariaLabel: "sales",
           label: intl.formatMessage(sectionNames.sales),
           id: "sales",
-          url: saleListUrl()
+          url: saleListUrl(),
         },
         {
           ariaLabel: "vouchers",
           label: intl.formatMessage(sectionNames.vouchers),
           id: "vouchers",
-          url: voucherListUrl()
+          url: voucherListUrl(),
         },
         ...mapToExtensionsItems(
           extensions.NAVIGATION_DISCOUNTS,
-          appExtensionsHeaderItem
-        )
+          appExtensionsHeaderItem,
+        ),
       ],
       iconSrc: discountsIcon,
       label: intl.formatMessage(commonMessages.discounts),
       permissions: [PermissionEnum.MANAGE_DISCOUNTS],
-      id: "discounts"
+      id: "discounts",
     },
     {
       ariaLabel: "pages",
@@ -189,18 +189,18 @@ function useMenuStructure(
           label: intl.formatMessage(sectionNames.pages),
           permissions: [PermissionEnum.MANAGE_PAGES],
           id: "pages",
-          url: pageListPath
+          url: pageListPath,
         },
         ...mapToExtensionsItems(
           extensions.NAVIGATION_PAGES,
-          appExtensionsHeaderItem
-        )
+          appExtensionsHeaderItem,
+        ),
       ],
       iconSrc: pagesIcon,
       label: intl.formatMessage(sectionNames.pages),
       permissions: [PermissionEnum.MANAGE_PAGES],
       id: "pages",
-      url: pageListPath
+      url: pageListPath,
     },
     {
       ariaLabel: "apps",
@@ -208,7 +208,7 @@ function useMenuStructure(
       label: intl.formatMessage(sectionNames.apps),
       permissions: [PermissionEnum.MANAGE_APPS],
       id: "apps",
-      url: appsListPath
+      url: appsListPath,
     },
     {
       ariaLabel: "translations",
@@ -218,18 +218,18 @@ function useMenuStructure(
           label: intl.formatMessage(sectionNames.translations),
           permissions: [PermissionEnum.MANAGE_TRANSLATIONS],
           id: "translations",
-          url: languageListUrl
+          url: languageListUrl,
         },
         ...mapToExtensionsItems(
           extensions.NAVIGATION_TRANSLATIONS,
-          appExtensionsHeaderItem
-        )
+          appExtensionsHeaderItem,
+        ),
       ],
       iconSrc: translationIcon,
       label: intl.formatMessage(sectionNames.translations),
       permissions: [PermissionEnum.MANAGE_TRANSLATIONS],
       id: "translations",
-      url: languageListUrl
+      url: languageListUrl,
     },
     {
       ariaLabel: "configure",
@@ -237,19 +237,19 @@ function useMenuStructure(
       label: intl.formatMessage(sectionNames.configuration),
       permissions: getConfigMenuItemsPermissions(intl),
       id: "configure",
-      url: configurationMenuUrl
-    }
+      url: configurationMenuUrl,
+    },
   ];
 
   const isMenuItemPermitted = (menuItem: FilterableMenuItem) => {
     const userPermissions = (user?.userPermissions || []).map(
-      permission => permission.code
+      permission => permission.code,
     );
     if (!menuItem?.permissions) {
       return true;
     }
     return menuItem.permissions.some(permission =>
-      userPermissions.includes(permission)
+      userPermissions.includes(permission),
     );
   };
 
@@ -269,9 +269,9 @@ function useMenuStructure(
 
         return [...resultItems, { ...menuItem, children: filteredChildren }];
       },
-      [] as FilterableMenuItem[]
+      [] as FilterableMenuItem[],
     ),
-    handleMenuItemClick
+    handleMenuItemClick,
   ];
 }
 

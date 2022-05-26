@@ -11,7 +11,7 @@ const props: AppDetailsPageProps = {
   navigateToApp: () => undefined,
   navigateToAppSettings: () => undefined,
   onAppActivateOpen: () => undefined,
-  onAppDeactivateOpen: () => undefined
+  onAppDeactivateOpen: () => undefined,
 };
 
 storiesOf("Views / Apps / App details", module)
