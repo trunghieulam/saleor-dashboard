@@ -107,6 +107,7 @@ export const Datagrid = <T extends { id: string }>({
           )}
           onChange={onChange}
         />
+        {/* Skip the last element */}
         {columns.slice(0, -1).map((column, index) => (
           <ColumnResize
             key={`${column.value}-${column.width}`}
