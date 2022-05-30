@@ -5,6 +5,7 @@ import {
   ChannelPriceArgs,
   ChannelPriceData
 } from "@saleor/channels/utils";
+import { ProductChannelListingAddInput } from "@saleor/graphql";
 import { FormChange, UseFormResult } from "@saleor/hooks/useForm";
 import moment from "moment";
 
@@ -120,9 +121,17 @@ export const getChannelsInput = (channels: ChannelPriceAndPreorderData[]) =>
     }
   }));
 
-export const getAvailabilityVariables = (channels: ChannelData[]) =>
+export const getAvailabilityVariables = (
+  channels: ChannelData[]
+): ProductChannelListingAddInput[] =>
   channels.map(channel => {
-    const { isAvailableForPurchase, availableForPurchase } = channel;
+    const {
+      isAvailableForPurchase,
+      availableForPurchase,
+      isPublished,
+      publicationDate,
+      visibleInListings
+    } = channel;
     const isAvailable =
       availableForPurchase && !isAvailableForPurchase
         ? true
@@ -135,9 +144,9 @@ export const getAvailabilityVariables = (channels: ChannelData[]) =>
           : availableForPurchase,
       channelId: channel.id,
       isAvailableForPurchase: isAvailable,
-      isPublished: channel.isPublished,
-      publicationDate: channel.publicationDate,
-      visibleInListings: channel.visibleInListings
+      isPublished,
+      publicationDate,
+      visibleInListings
     };
   });
 

@@ -154,7 +154,7 @@ export const getChannelsVariables = (
 export const getSimpleChannelsVariables = (
   data: ProductUpdatePageSubmitData,
   product: ProductFragment
-) => {
+): ProductChannelListingUpdateMutationVariables => {
   const productChannels = createSortedChannelsDataFromProduct(product);
   const existingChannelIDs = productChannels.map(channel => channel.id);
   const modifiedChannelIDs = data.channelListings.map(channel => channel.id);
@@ -164,12 +164,10 @@ export const getSimpleChannelsVariables = (
   );
 
   return {
-    variables: {
-      id: product.id,
-      input: {
-        updateChannels: getAvailabilityVariables(data.channelListings),
-        removeChannels: removedChannelIDs
-      }
+    id: product.id,
+    input: {
+      updateChannels: getAvailabilityVariables(data.channelListings),
+      removeChannels: removedChannelIDs
     }
   };
 };
