@@ -2,7 +2,10 @@ import {
   AvailableColumn,
   DatagridCell
 } from "@saleor/components/Datagrid/types";
-import { ProductDetailsVariantFragment } from "@saleor/graphql";
+import {
+  ChannelFragment,
+  ProductDetailsVariantFragment
+} from "@saleor/graphql";
 import { IntlShape } from "react-intl";
 
 import messages from "./messages";
@@ -15,17 +18,29 @@ export function isEditable(column: string): boolean {
   return column !== "name";
 }
 
-export function getData(
-  variant: ProductDetailsVariantFragment,
-  column: string
-): DatagridCell {
-  if (["name", "sku"].includes(column)) {
-    return {
-      id: variant.id,
-      value: variant[column]?.toString() ?? "",
-      column,
-      type: "string"
-    };
+interface GetData {
+  channels: ChannelFragment[];
+  column: string;
+  variant: ProductDetailsVariantFragment;
+}
+
+export function getData({ channels, column, variant }: GetData): DatagridCell {
+  switch (column) {
+    case "name":
+      return {
+        id: variant.id,
+        value: variant[column]?.toString() ?? "",
+        column,
+        readOnly: true,
+        type: "string"
+      };
+    case "sku":
+      return {
+        id: variant.id,
+        value: variant[column]?.toString() ?? "",
+        column,
+        type: "string"
+      };
   }
 
   if (isStockColumn.test(column)) {
@@ -41,17 +56,18 @@ export function getData(
   }
 
   if (isChannelColumn.test(column)) {
+    const channelId = column.match(isChannelColumn)[1];
     const listing = variant.channelListings.find(
-      listing => listing.channel.id === column.match(isChannelColumn)[1]
+      listing => listing.channel.id === channelId
     );
 
     return {
       column,
       id: variant.id,
-      value: listing?.price.amount.toString(),
+      value: listing?.price?.amount.toString() ?? "",
       type: "moneyToggle",
-      toggled: !!listing?.price,
-      currency: listing?.price.currency
+      toggled: !!listing,
+      currency: channels.find(channel => channelId === channel.id)?.currencyCode
     };
   }
 

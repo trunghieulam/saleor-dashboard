@@ -347,6 +347,7 @@ export const ProductUpdatePage: React.FC<ProductUpdatePageProps> = ({
                   <ProductVariants
                     channels={channels}
                     limits={limits}
+                    listings={product.channelListings}
                     variants={variants}
                     warehouses={warehouses}
                     onVariantBulkDelete={onVariantBulkDelete}

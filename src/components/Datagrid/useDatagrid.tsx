@@ -63,6 +63,7 @@ function useDatagrid<T extends { id: string }>({
     dataRef.current = d;
   };
 
+  // Reload data after initial changes
   useEffect(() => {
     const newData = initial.map(v =>
       columns.map<DatagridCell>(c => ({
@@ -76,13 +77,27 @@ function useDatagrid<T extends { id: string }>({
     updateRef(newData);
   }, [initial]);
 
+  // Move data after column/row changing (add new, reorder, etc.)
   useEffect(() => {
     if (rows.length && columns.length) {
       const newData = dataRef.current
         .map((_, index) =>
           dataRef.current.find(row => getId(row) === rows[index])
         )
-        .map(row => columns.map(c => row.find(f => f.column === c.value)));
+        .map(row =>
+          columns.map(
+            c =>
+              // Either move existing data or get initial
+              // Example: select SKU column, deselect it and select it again.
+              // The SKU column will now be filled with initial data regardless
+              // of what had been typed into cells before it was unselected.
+              row.find(f => f.column === c.value) ??
+              getData(
+                initial.find(d => d.id === getId(row)),
+                c.value
+              )
+          )
+        );
       setData(newData);
       updateRef(newData);
     }
@@ -93,7 +108,8 @@ function useDatagrid<T extends { id: string }>({
       const fixedData = data.map((row, rowIndex) =>
         row.map((cell, cellIndex) =>
           cell === undefined
-            ? {
+            ? // Happens after clearing with delete or backspace
+              {
                 ...getData(initial[rowIndex], columns[cellIndex].value),
                 ...(cell.type === "moneyToggle" ? { toggled: false } : {}),
                 value: ""
