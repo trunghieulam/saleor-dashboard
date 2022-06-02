@@ -3370,6 +3370,7 @@ export const variant = (placeholderImage: string): ProductVariantFragment => ({
     channelListings: [
       {
         __typename: "ProductChannelListing",
+        id: "11",
         isPublished: false,
         publicationDate: null,
         channel: {
@@ -3381,6 +3382,7 @@ export const variant = (placeholderImage: string): ProductVariantFragment => ({
       },
       {
         __typename: "ProductChannelListing",
+        id: "12",
         isPublished: true,
         publicationDate: "2022-01-21",
         channel: {
