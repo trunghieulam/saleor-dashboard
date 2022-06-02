@@ -67,8 +67,7 @@ import {
 } from "./consts";
 import {
   createImageReorderHandler,
-  createImageUploadHandler,
-  createVariantReorderHandler
+  createImageUploadHandler
 } from "./handlers";
 import { useProductUpdateHandler } from "./handlers/useProductUpdateHandler";
 import useChannelVariantListings from "./useChannelVariantListings";
