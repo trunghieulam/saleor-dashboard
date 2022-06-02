@@ -14,10 +14,6 @@ const isStockColumn = /^stock:(.*)/;
 const isChannelColumn = /^channel:(.*)/;
 const isAttributeColumn = /^attribute:(.*)/;
 
-export function isEditable(column: string): boolean {
-  return column !== "name";
-}
-
 interface GetData {
   channels: ChannelFragment[];
   column: string;
@@ -109,8 +105,7 @@ export function getColumnData(
     return {
       ...common,
       label: variants
-        .map(variant => variant.stocks.map(stock => stock.warehouse))
-        .flat()
+        .flatMap(variant => variant.stocks.map(stock => stock.warehouse))
         .find(warehouse => warehouse.id === name.match(isStockColumn)[1])?.name,
       type: "number"
     };
@@ -120,8 +115,9 @@ export function getColumnData(
     return {
       ...common,
       label: variants
-        .map(variant => variant.channelListings.map(listing => listing.channel))
-        .flat()
+        .flatMap(variant =>
+          variant.channelListings.map(listing => listing.channel)
+        )
         .find(channel => channel.id === name.match(isChannelColumn)[1])?.name,
       type: "moneyToggle"
     };
@@ -131,10 +127,9 @@ export function getColumnData(
     return {
       ...common,
       label: variants
-        .map(variant =>
+        .flatMap(variant =>
           variant.attributes.map(attribute => attribute.attribute)
         )
-        .flat()
         .find(attribute => attribute.id === name.match(isAttributeColumn)[1])
         ?.name,
       type: "string"

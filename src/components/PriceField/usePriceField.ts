@@ -37,7 +37,7 @@ export function usePriceField(currency: string, onChange: FormChange) {
 
   const handleKeyDown: TextFieldProps["onKeyDown"] = e => {
     // disallow entering e (exponent)
-    if (e.key === "e" || e.key === "E") {
+    if (e.key === "e" || e.key === "E" || e.key === "-") {
       e.preventDefault();
     }
     // ignore separator input when currency doesn't support decimal values

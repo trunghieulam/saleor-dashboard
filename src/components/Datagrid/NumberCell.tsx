@@ -15,7 +15,7 @@ export const NumberCellEdit: DataEditorComponent<NumberDatagridCell> = ({
   const onChange: FormChange = event => {
     onChangeBase({ ...cell, value: event.target.value });
   };
-  const value = cell?.value ?? "";
+  const value = cell.value ?? "";
 
   return (
     <div className="Spreadsheet__data-editor">
